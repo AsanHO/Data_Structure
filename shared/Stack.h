@@ -3,75 +3,65 @@
 #include <cassert>
 #include <iostream>
 
-template<typename T> // 템플릿 사용
-class Stack
-{
-public:
-	Stack(int capacity = 1)
-	{
-		assert(capacity > 0);
-		Resize(capacity);
-	}
+template <typename T>  // 템플릿 사용
+class Stack {
+   protected:  // 뒤에서 상속해서 사용
+    T* stack_ = nullptr;
+    int top_ = -1;  // 0 아님
+    int capacity_ = 0;
 
-	~Stack()
-	{
-		if (stack_) delete[] stack_;
-	}
+   public:
+    Stack(int capacity = 1) {
+        assert(capacity > 0);
+        Resize(capacity);
+    }
 
-	void Resize(int new_capacity)
-	{
-		T* new_stack = new T[new_capacity];
-		memcpy(new_stack, stack_, sizeof(T) * Size());
-		if (stack_) delete[] stack_;
-		stack_ = new_stack;
-		capacity_ = new_capacity;
-	}
+    ~Stack() {
+        if (stack_) delete[] stack_;
+    }
 
-	bool IsEmpty() const
-	{
-		return false; // TODO:
-	}
+    void Resize(int new_capacity) {
+        T* new_stack = new T[new_capacity];
+        memcpy(new_stack, stack_, sizeof(T) * Size());
+        if (stack_) delete[] stack_;
+        stack_ = new_stack;
+        capacity_ = new_capacity;
+    }
 
-	int Size() const
-	{
-		return 0; //TODO:
-	}
+    bool IsEmpty() const { return top_ < 0; }
 
-	void Print()
-	{
-		using namespace std;
+    int Size() const { return top_ + 1; }
 
-		for (int i = 0; i < Size(); i++) // Size() 사용
-			cout << stack_[i] << " ";
-		cout << endl;
-	}
+    void Print() {
+        using namespace std;
 
-	// Returns TOP element of stack.
-	T& Top() const
-	{
-		assert(!IsEmpty());
+        for (int i = 0; i < Size(); i++)  // Size() 사용
+            cout << stack_[i] << " ";
+        cout << endl;
+    }
 
-		return stack_[top_];
-	}
+    // Returns TOP element of stack.
+    T& Top() const {
+        assert(!IsEmpty());
 
-	// Insert item into the TOP of the stack
-	void Push(const T& item)
-	{
-		// TODO: 필요하면 리사이즈 
+        return stack_[top_];
+    }
 
-		// TODO:
-	}
+    // Insert item into the TOP of the stack
+    void Push(const T& item) {
+        // TODO: 필요하면 리사이즈
+        if (Size() == capacity_) {
+            Resize(Size() * 2);
+        }
+        // TODO:
+        top_++;
+        stack_[top_] = item;
+    }
 
-	// Delete the TOP element of the stack
-	void Pop()
-	{
-		assert(!IsEmpty());
-
-		// TODO:
-	}
-
-protected: // 뒤에서 상속해서 사용
-	T* stack_ = nullptr;
-	int top_ = -1; // 0 아님
-	int capacity_ = 0;
+    // Delete the TOP_ element of the stack
+    void Pop() {
+        assert(!IsEmpty());
+        // TODO:
+        top_--;
+    }
 };
