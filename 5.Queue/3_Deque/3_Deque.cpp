@@ -1,34 +1,36 @@
-﻿#include "../shared/Deque.h"
+﻿#include <iostream>
 
-#include <iostream>
+#include "../../shared/Deque.h"
 
-int main()
-{
-	// Double Ended Queue (덱)
-	Deque<char> d(8);
+int main() {
+    // Double Ended Queue (덱)
+    Deque<char> d(8);
 
-	d.SetDebugFlag(true);
+    d.SetDebugFlag(true);
 
-	d.Print();
+    d.Print();
 
-	d.PushFront('A');
-	d.Print();
+    d.PushFront('A');
+    d.Print();
 
-	d.PushFront('B');
-	d.Print();
+    d.PushFront('B');
+    d.Print();
 
-	d.PushBack('C');
-	d.Print();
+    d.PushBack('C');
+    d.Print();
 
-	d.PushBack('D');
-	d.Print();
+    d.PushBack('D');
+    d.Print();
 
-	d.PopFront();
-	d.Print();
+    d.PopFront();
+    d.Print();
 
-	d.PopBack();
-	d.Print();
-
-	return 0;
+    d.PopBack();
+    d.Print();
+    std::cout << "스따또" << std::endl;
+    for (char c = 'E'; c <= 'K'; c++) {
+        d.PushFront(c);
+        d.Print();
+    }
+    return 0;
 }
-

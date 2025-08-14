@@ -1,182 +1,197 @@
 ﻿#pragma once
 
 #include <cassert>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 
-template<typename T>
-class Queue // Circular Queue
+template <typename T>
+class Queue  // Circular Queue
 {
-public:
-	Queue(int capacity = 2)
-	{
-		assert(capacity > 0);
+   protected:        // 뒤에서 상속해서 사용
+    T* queue_;       // array for queue elements
+    int front_ = 0;  // 시작 인덱스보다 하나 작은 값
+    int rear_ = 0;   // 마지막 인덱스 (첫 값은 1에 추가)
+    int capacity_;   // 빈 칸을 하나 둬야 하기 때문에 필요 메모리는 최대 저장량 + 1
+    bool print_debug_ = false;
 
-		capacity_ = capacity;
-		queue_ = new T[capacity_];
-		front_ = rear_ = 0;
-	}
+   public:
+    Queue(int capacity = 2) {
+        assert(capacity > 0);
 
-	~Queue()
-	{
-		if (queue_) delete[] queue_;
-	}
+        capacity_ = capacity;
+        queue_ = new T[capacity_];
+        front_ = rear_ = 0;
+    }
 
-	bool IsEmpty() const
-	{
-		return front_ == rear_;
-	}
+    ~Queue() {
+        if (queue_) delete[] queue_;
+    }
 
-	bool IsFull() const
-	{
-		// 원형 큐에서 꽉 찼다의 기준
-		return (rear_ + 1) % capacity_ == front_;
-	}
+    bool IsEmpty() const { return front_ == rear_; }
 
-	T& Front() const
-	{
-		assert(!IsEmpty());
+    bool IsFull() const {
+        // 원형 큐에서 꽉 찼다의 기준
+        return (rear_ + 1) % capacity_ == front_;
+    }
 
-		return queue_[(front_ + 1) % capacity_]; // 주의 + 1
-	}
+    T& Front() const {
+        assert(!IsEmpty());
 
-	T& Rear() const
-	{
-		assert(!IsEmpty());
+        return queue_[(front_ + 1) % capacity_];  // 주의 + 1
+    }
 
-		return queue_[rear_];
-	}
+    T& Rear() const {
+        assert(!IsEmpty());
 
-	int Size() const
-	{
-		// 하나하나 세는 방법 보다는 경우를 따져서 바로 계산하는 것이 빠릅니다.
+        return queue_[rear_];
+    }
 
-		// if-else-if-else로 구현하는 경우
-		//if (...)
-		//	return ...;
-		//else if (...)
-		//	return ...;
-		//else
-		//	return 0;
+    int Size() const {
+        // 하나하나 세는 방법 보다는 경우를 따져서 바로 계산하는 것이 빠릅니다.
 
-		// 또는 if-else 하나로도 구현 가능합니다.
-		// if (...)
-		//	  return ...;
-		// else
-		//    return ...;
+        // if-else-if-else로 구현하는 경우
+        if (front_ < rear_)
+            return rear_ - front_;
+        else if (front_ > rear_)
+            return capacity_ - (front_ - rear_);
+        else
+            return 0;
 
-		return 0; // TODO: 임시
-	}
+        // // 또는 if-else 하나로도 구현 가능합니다.
+        // if (front_ == rear_)
+        //     return 0;
+        // else
+        //     return;
 
-	void Resize() // 2배씩 증가
-	{
-		// 조언
-		// - 새로운 개념이 항상 그렇듯 원형 큐도 처음에는 어렵고 나중에는 당연해집니다.
-		// - 처음 공부하실 때 답을 맞추려고 하지 마시고 "어떻게 디버깅을 잘 할까?"를 찾으세요.
-		// - 부지런히 여러가지 출력해보고 "출력하는 도구(예: 배열 출력)"도 만들어서 사용해보고
-		// - 머리도 쓰고 고민도 하다 보면 인생을 지탱해줄 능력을 갖추게 됩니다.
-		// - 힘들면 디스코드에서 조금씩 도움 받으시는 것도 좋아요.
+        // return 0;  // TODO: 임시
+    }
 
-		// TODO: 하나하나 복사하는 방식은 쉽게 구현할 수 있습니다. 
-		//       (도전) 경우를 나눠서 memcpy()로 블럭 단위로 복사하면 더 효율적입니다.
-	}
+    void Resize()  // 2배씩 증가
+    {              // 조언
+        // - 새로운 개념이 항상 그렇듯 원형 큐도 처음에는 어렵고 나중에는 당연해집니다.
+        // - 처음 공부하실 때 답을 맞추려고 하지 마시고 "어떻게 디버깅을 잘 할까?"를 찾으세요.
+        // - 부지런히 여러가지 출력해보고 "출력하는 도구(예: 배열 출력)"도 만들어서 사용해보고
+        // - 머리도 쓰고 고민도 하다 보면 인생을 지탱해줄 능력을 갖추게 됩니다.
+        // - 힘들면 디스코드에서 조금씩 도움 받으시는 것도 좋아요.
 
-	void Enqueue(const T& item) // 맨 뒤에 추가, Push()
-	{
-		if (IsFull())
-			Resize();
+        T* temp = new T[capacity_ * 2];
+        int idx = 1;
+        if (front_ < rear_) {
+            for (int i = front_ + 1; i <= rear_; i++) {
+                temp[idx] = queue_[i];
 
-		// TODO:
-	}
+                idx++;
+            }
+        } else {
+            for (int i = front_ + 1; i < capacity_; i++) {
+                temp[idx] = queue_[i];
+                idx++;
+            }
+            for (int i = 0; i <= rear_; i++) {
+                temp[idx] = queue_[i];
 
-	void Dequeue() // 큐의 첫 요소 삭제, Pop()
-	{
-		assert(!IsEmpty());
+                idx++;
+            }
+        }
 
-		// TODO: 
-	}
+        int new_rear = Size();
+        delete[] queue_;
+        queue_ = temp;
+        capacity_ = capacity_ * 2;
+        rear_ = new_rear;
+        front_ = 0;
+        std::cout << "리사이즈 완료" << std::endl;
+        Print();
 
-	void Print()
-	{
-		using namespace std;
+        //       (도전) 경우를 나눠서 memcpy()로 블럭 단위로 복사하면 더 효율적입니다.
+    }
 
-		for (int i = (front_ + 1) % capacity_; i != (rear_ + 1) % capacity_; i = (i + 1) % capacity_)
-			cout << queue_[i] << " ";
-		cout << endl;
+    void Enqueue(const T& item)  // 맨 뒤에 추가, Push()
+    {
+        if (IsFull()) Resize();
+        if (rear_ == capacity_ - 1) {
+            rear_ = 0;
+        } else {
+            rear_++;
+        }
 
-		if (print_debug_)
-			PrintDebug();
-	}
+        queue_[rear_] = item;
+    }
 
-	void PrintDebug()
-	{
-		using namespace std;
+    void Dequeue()  // 큐의 첫 요소 삭제, Pop()
+    {
+        assert(!IsEmpty());
 
-		cout << "Cap = " << capacity_ << ", Size = " << Size();
-		cout << endl;
+        // TODO:
 
-		// front와 rear 위치 표시
-		for (int i = 0; i < capacity_; i++) {
-			if (i == front_) cout << " F ";
-			else if (i == rear_) cout << " R ";
-			else cout << "   ";
-		}
-		cout << endl;
+        if (front_ == capacity_ - 1) {
+            front_ = 0;
+        } else {
+            queue_[front_ + 1] = '*';
+            front_++;
+        }
+    }
 
-		// 0 based index
-		for (int i = 0; i < capacity_; i++)
-			cout << setw(2) << i << " ";
-		cout << endl;
+    void Print() {
+        using namespace std;
 
-		if (front_ < rear_)
-		{
-			// front 앞 사용하지 않은 공간
-			for (int i = 0; i < front_ + 1; i++)
-				cout << " - ";
+        for (int i = (front_ + 1) % capacity_; i != (rear_ + 1) % capacity_; i = (i + 1) % capacity_) {
+            cout << queue_[i] << " ";
+        }
+        cout << endl;
 
-			// 저장된 내용물
-			for (int i = front_ + 1; i <= rear_; i++)
-				cout << setw(2) << queue_[i] << " ";
+        if (print_debug_) PrintDebug();
+    }
 
-			// rear 뒤 사용하지 않은 공간
-			for (int i = rear_ + 1; i < capacity_; i++)
-				cout << " * ";
+    void PrintDebug() {
+        using namespace std;
 
-			cout << endl << endl;
-		}
-		else if (front_ > rear_)
-		{
-			// rear 이전에 저장된 내용물
-			for (int i = 0; i <= rear_; i++)
-				cout << setw(2) << queue_[i] << " ";
+        cout << "Cap = " << capacity_ << ", Size = " << Size();
+        cout << endl;
 
-			// rear와 front 사이 사용하지 않은 공간
-			for (int i = rear_ + 1; i <= front_; i++)
-				cout << " * ";
+        // front와 rear 위치 표시
+        for (int i = 0; i < capacity_; i++) {
+            if (i == front_)
+                cout << " F ";
+            else if (i == rear_)
+                cout << " R ";
+            else
+                cout << "   ";
+        }
+        cout << endl;
 
-			// front 뒤 내용물
-			for (int i = front_ + 1; i < capacity_; i++)
-				cout << setw(2) << queue_[i] << " ";
+        // 0 based index
+        for (int i = 0; i < capacity_; i++) cout << setw(2) << i << " ";
+        cout << endl;
 
-			cout << endl << endl;
-		}
-		else // 비었을 경우
-		{
-			for (int i = 0; i < capacity_; i++)
-				cout << " - ";
-			cout << endl << endl;
-		}
-	}
+        if (front_ < rear_) {
+            // front 앞 사용하지 않은 공간
+            for (int i = 0; i < front_ + 1; i++) cout << " - ";
 
-	void SetDebugFlag(bool flag)
-	{
-		print_debug_ = flag;
-	}
+            // 저장된 내용물
+            for (int i = front_ + 1; i <= rear_; i++) cout << setw(2) << queue_[i] << " ";
 
-protected: // 뒤에서 상속해서 사용
-	T* queue_; // array for queue elements
-	int front_ = 0; // 시작 인덱스보다 하나 작은 값
-	int rear_ = 0; // 마지막 인덱스 (첫 값은 1에 추가)
-	int capacity_; // 빈 칸을 하나 둬야 하기 때문에 필요 메모리는 최대 저장량 + 1
-	bool print_debug_ = false;
+            // rear 뒤 사용하지 않은 공간
+            for (int i = rear_ + 1; i < capacity_; i++) cout << " * ";
+
+            cout << endl << endl;
+        } else if (front_ > rear_) {
+            // rear 이전에 저장된 내용물
+            for (int i = 0; i <= rear_; i++) cout << setw(2) << queue_[i] << " ";
+
+            // rear와 front 사이 사용하지 않은 공간
+            for (int i = rear_ + 1; i <= front_; i++) cout << " * ";
+
+            // front 뒤 내용물
+            for (int i = front_ + 1; i < capacity_; i++) cout << setw(2) << queue_[i] << " ";
+
+            cout << endl << endl;
+        } else  // 비었을 경우
+        {
+            for (int i = 0; i < capacity_; i++) cout << " - ";
+            cout << endl << endl;
+        }
+    }
+
+    void SetDebugFlag(bool flag) { print_debug_ = flag; }
 };
