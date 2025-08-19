@@ -1,149 +1,208 @@
 ﻿#pragma once
 
-#include <cassert>
 #include <stdint.h>
+
 #include <algorithm>
+#include <cassert>
 
-template<typename T>
-class DoublyLinkedList
-{
-public:
-	struct Node
-	{
-		T item = T();
+template <typename T>
+class DoublyLinkedList {
+   public:
+    struct Node {
+        T item = T();
 
-		Node* left = nullptr;
-		Node* right = nullptr;
+        Node* left = nullptr;
+        Node* right = nullptr;
 
-		// 참고: prev/next가 아니라 left/right
-	};
+        // 참고: prev/next가 아니라 left/right
+    };
 
-	DoublyLinkedList()
-	{
-	}
+   protected:
+    Node* first_ = nullptr;
 
-	~DoublyLinkedList()
-	{
-		Clear();
-	}
+   public:
+    DoublyLinkedList() {}
 
-	void Clear() // 모두 지워야(delete) 합니다.
-	{
-		// TODO:
-	}
+    ~DoublyLinkedList() { Clear(); }
 
-	bool IsEmpty()
-	{
-		return true; // TODO:
-	}
+    void Clear()  // 모두 지워야(delete) 합니다.
+    {
+        Node* ptr = first_;
+        while (ptr) {
+            Node* target = ptr;
+            ptr = ptr->right;
+            delete target;
+        }
+    }
 
-	int Size()
-	{
-		int size = 0;
+    bool IsEmpty() { return first_ == nullptr; }
 
-		// TODO:
+    int Size() {
+        int size = 0;
 
-		return size;
-	}
+        // TODO:
+        Node* ptr = first_;
+        while (ptr) {
+            size++;
+            ptr = ptr->right;
+        }
 
-	void Print()
-	{
-		using namespace std;
+        return size;
+    }
 
-		Node* current = first_;
+    void Print() {
+        using namespace std;
 
-		if (IsEmpty())
-			cout << "Empty" << endl;
-		else
-		{
-			cout << "Size = " << Size() << endl;
+        Node* current = first_;
+        Node* last;
 
-			cout << " Forward: ";
-			// TODO:
-			cout << endl;
+        if (IsEmpty())
+            cout << "Empty" << endl;
+        else {
+            cout << "Size = " << Size() << endl;
 
-			cout << "Backward: ";
-			// TODO:
-			cout << endl;
-		}
-	}
+            cout << " Forward: ";
+            // TODO:
+            while (current) {
+                cout << current->item << " ";
+                if (current->right == nullptr) {
+                    last = current;
+                }
+                current = current->right;
+            }
+            cout << endl;
+            cout << "Backward: ";
+            // TODO:
+            while (last) {
+                cout << last->item << " ";
+                last = last->left;
+            }
+            cout << endl;
+        }
+    }
 
-	Node* Find(T item)
-	{
-		return nullptr; // TODO:
-	}
+    Node* Find(T item) {
+        Node* ptr = first_;
+        while (ptr) {
+            if (ptr->item == item) {
+                return ptr;
+            }
+            ptr = ptr->right;
+        }
+        return nullptr;  // TODO:
+    }
 
-	void InsertBack(Node* node, T item)
-	{
-		if (IsEmpty())
-		{
-			PushBack(item);
-		}
-		else
-		{
-			// TODO:
-		}
-	}
+    void InsertBack(Node* node, T item) {
+        if (IsEmpty()) {
+            PushBack(item);
+        } else {
+            Node* nextNode = node->right;
+            Node* newNode = new Node{item, node, nextNode};
+            nextNode->left = newNode;
+            node->right = newNode;
+        }
+    }
 
-	void PushFront(T item)
-	{
-		// TODO:
-	}
+    void PushFront(T item) {
+        // TODO:
+        Node* newNode = new Node{item, nullptr, first_};
+        if (IsEmpty()) {
+            first_ = newNode;
+            return;
+        }
+        first_->left = newNode;
+        first_ = newNode;
+    }
 
-	void PushBack(T item)
-	{
-		// TODO:
-	}
+    void PushBack(T item) {
+        // TODO:
 
-	void PopFront()
-	{
-		if (IsEmpty())
-		{
-			using namespace std;
-			cout << "Nothing to Pop in PopFront()" << endl;
-			return;
-		}
+        Node* newNode = new Node{item, nullptr, nullptr};
+        if (IsEmpty()) {
+            first_ = newNode;
+        }
+        Node* last = first_;
+        while (last->right) {
+            last = last->right;
+        }
+        newNode->left = last;
+        last->right = newNode;
+    }
 
-		assert(first_);
+    void PopFront() {
+        if (IsEmpty()) {
+            using namespace std;
+            cout << "Nothing to Pop in PopFront()" << endl;
+            return;
+        }
 
-		// TODO:
-	}
+        assert(first_);
 
-	void PopBack()
-	{
-		if (IsEmpty())
-		{
-			using namespace std;
-			cout << "Nothing to Pop in PopBack()" << endl;
-			return;
-		}
+        // TODO:
+    }
 
-		// 맨 뒤에서 하나 앞의 노드를 찾아야 합니다.
+    void PopBack() {
+        if (IsEmpty()) {
+            using namespace std;
+            cout << "Nothing to Pop in PopBack()" << endl;
+            return;
+        }
 
-		assert(first_);
+        // 맨 뒤에서 하나 앞의 노드를 찾아야 합니다.
 
-		// TODO:
-	}
+        assert(first_);
+        assert(first_);
+        Node* temp = first_;
+        Node* target;
+        Node* nextLastNode;
+        while (temp) {
+            if (target) {
+                nextLastNode = target;
+            }
+            target = temp;
+            temp = temp->right;
+        }
+        // TODO: 메모리 삭제
+        // std::cout << target->item << std::endl;
+        // std::cout << nextLastNode->item << std::endl;
+        nextLastNode->right = nullptr;
+        delete target;
+        // TODO:
+    }
 
-	void Reverse()
-	{
-		// TODO:
-	}
+    void Reverse() {
+        // TODO:
+        if (!first_) {
+            return;
+        }
+        Node* a;
+        Node* b;
+        Node* c;
+        a = first_;
+        b = NULL;
 
-	T Front()
-	{
-		assert(first_);
+        while (a != NULL) {
+            c = b;
+            b = a;
+            a = a->right;
+            b->left = a;
+            b->right = c;
+        }
+        first_ = b;
+    }
 
-		return T(); // TODO:
-	}
+    T Front() {
+        assert(first_);
 
-	T Back()
-	{
-		assert(first_);
+        return first_->item;  // TODO:
+    }
 
-		return T(); // TODO:
-	}
-
-protected:
-	Node* first_ = nullptr;
+    T Back() {
+        assert(first_);
+        Node* ptr = first_;
+        while (ptr->right) {
+            ptr = ptr->right;
+        }
+        return ptr->item;
+    }
 };
