@@ -11,7 +11,8 @@ class Queue  // Circular Queue
     T* queue_;       // array for queue elements
     int front_ = 0;  // 시작 인덱스보다 하나 작은 값
     int rear_ = 0;   // 마지막 인덱스 (첫 값은 1에 추가)
-    int capacity_;   // 빈 칸을 하나 둬야 하기 때문에 필요 메모리는 최대 저장량 + 1
+    int capacity_;  // 빈 칸을 하나 둬야 하기 때문에 필요 메모리는 최대 저장량 +
+                    // 1
     bool print_debug_ = false;
 
    public:
@@ -68,9 +69,12 @@ class Queue  // Circular Queue
 
     void Resize()  // 2배씩 증가
     {              // 조언
-        // - 새로운 개념이 항상 그렇듯 원형 큐도 처음에는 어렵고 나중에는 당연해집니다.
-        // - 처음 공부하실 때 답을 맞추려고 하지 마시고 "어떻게 디버깅을 잘 할까?"를 찾으세요.
-        // - 부지런히 여러가지 출력해보고 "출력하는 도구(예: 배열 출력)"도 만들어서 사용해보고
+        // - 새로운 개념이 항상 그렇듯 원형 큐도 처음에는 어렵고 나중에는
+        // 당연해집니다.
+        // - 처음 공부하실 때 답을 맞추려고 하지 마시고 "어떻게 디버깅을 잘
+        // 할까?"를 찾으세요.
+        // - 부지런히 여러가지 출력해보고 "출력하는 도구(예: 배열 출력)"도
+        // 만들어서 사용해보고
         // - 머리도 쓰고 고민도 하다 보면 인생을 지탱해줄 능력을 갖추게 됩니다.
         // - 힘들면 디스코드에서 조금씩 도움 받으시는 것도 좋아요.
 
@@ -100,10 +104,10 @@ class Queue  // Circular Queue
         capacity_ = capacity_ * 2;
         rear_ = new_rear;
         front_ = 0;
-        std::cout << "리사이즈 완료" << std::endl;
         Print();
 
-        //       (도전) 경우를 나눠서 memcpy()로 블럭 단위로 복사하면 더 효율적입니다.
+        //       (도전) 경우를 나눠서 memcpy()로 블럭 단위로 복사하면 더
+        //       효율적입니다.
     }
 
     void Enqueue(const T& item)  // 맨 뒤에 추가, Push()
@@ -127,7 +131,7 @@ class Queue  // Circular Queue
         if (front_ == capacity_ - 1) {
             front_ = 0;
         } else {
-            queue_[front_ + 1] = '*';
+            // queue_[front_ + 1] = nullptr;
             front_++;
         }
     }
@@ -135,7 +139,8 @@ class Queue  // Circular Queue
     void Print() {
         using namespace std;
 
-        for (int i = (front_ + 1) % capacity_; i != (rear_ + 1) % capacity_; i = (i + 1) % capacity_) {
+        for (int i = (front_ + 1) % capacity_; i != (rear_ + 1) % capacity_;
+             i = (i + 1) % capacity_) {
             cout << queue_[i] << " ";
         }
         cout << endl;
@@ -169,7 +174,8 @@ class Queue  // Circular Queue
             for (int i = 0; i < front_ + 1; i++) cout << " - ";
 
             // 저장된 내용물
-            for (int i = front_ + 1; i <= rear_; i++) cout << setw(2) << queue_[i] << " ";
+            for (int i = front_ + 1; i <= rear_; i++)
+                cout << setw(2) << queue_[i] << " ";
 
             // rear 뒤 사용하지 않은 공간
             for (int i = rear_ + 1; i < capacity_; i++) cout << " * ";
@@ -177,13 +183,15 @@ class Queue  // Circular Queue
             cout << endl << endl;
         } else if (front_ > rear_) {
             // rear 이전에 저장된 내용물
-            for (int i = 0; i <= rear_; i++) cout << setw(2) << queue_[i] << " ";
+            for (int i = 0; i <= rear_; i++)
+                cout << setw(2) << queue_[i] << " ";
 
             // rear와 front 사이 사용하지 않은 공간
             for (int i = rear_ + 1; i <= front_; i++) cout << " * ";
 
             // front 뒤 내용물
-            for (int i = front_ + 1; i < capacity_; i++) cout << setw(2) << queue_[i] << " ";
+            for (int i = front_ + 1; i < capacity_; i++)
+                cout << setw(2) << queue_[i] << " ";
 
             cout << endl << endl;
         } else  // 비었을 경우

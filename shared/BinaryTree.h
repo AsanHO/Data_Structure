@@ -1,231 +1,248 @@
 ﻿#pragma once
 
-#include <iostream>
 #include <fstream>
-#include <string> // BinaryTree 출력
+#include <iostream>
+#include <string>  // BinaryTree 출력
 
 #include "Queue.h"
 #include "Stack.h"
 
-template<typename T>
-class BinaryTree
-{
-public:
-	struct Node
-	{
-		T item = T();
-		Node* left = nullptr; // Left child
-		Node* right = nullptr; // Right child
-	};
+template <typename T>
+class BinaryTree {
+   public:
+    struct Node {
+        T item = T();
+        Node* left = nullptr;   // Left child
+        Node* right = nullptr;  // Right child
+    };
 
-	// 디버깅 도구: 큐에서 주소 대신에 아이템 출력
-	class MyQueue : public Queue<Node*>
-	{
-	public:
-		void Print()
-		{
-			using namespace std;
+   protected:
+    Node* root_ = nullptr;
 
-			for (int i = (this->front_ + 1) % this->capacity_; i != (this->rear_ + 1) % this->capacity_; i = (i + 1) % this->capacity_)
-				cout << this->queue_[i]->item << " ";
-			cout << endl;
-		}
-	};
+   public:
+    // 디버깅 도구: 큐에서 주소 대신에 아이템 출력
+    class MyQueue : public Queue<Node*> {
+       public:
+        void Print() {
+            using namespace std;
 
-	// 디버깅 도구: 스택에서 주소 대신에 아이템 출력
-	class MyStack : public Stack<Node*>
-	{
-	public:
-		void Print()
-		{
-			using namespace std;
+            for (int i = (this->front_ + 1) % this->capacity_;
+                 i != (this->rear_ + 1) % this->capacity_;
+                 i = (i + 1) % this->capacity_)
+                cout << this->queue_[i]->item << " ";
+            cout << endl;
+        }
+    };
 
-			for (int i = 0; i < this->Size(); i++)
-				cout << this->stack_[i]->item << " ";
-			cout << endl;
-		}
-	};
+    // 디버깅 도구: 스택에서 주소 대신에 아이템 출력
+    class MyStack : public Stack<Node*> {
+       public:
+        void Print() {
+            using namespace std;
 
-	BinaryTree() {}
+            for (int i = 0; i < this->Size(); i++)
+                cout << this->stack_[i]->item << " ";
+            cout << endl;
+        }
+    };
 
-	BinaryTree(Node* root)
-	{
-		root_ = root;
-	}
+    BinaryTree() {}
 
-	bool IsEmpty()
-	{
-		return root_ == nullptr;
-	}
+    BinaryTree(Node* root) { root_ = root; }
 
-	void Visit(Node* node)
-	{
-		using namespace std;
-		cout << node->item << " "; // 수행하고 싶은 작업 구현(여기서는 출력)
-	}
+    bool IsEmpty() { return root_ == nullptr; }
 
-	int Sum()
-	{
-		return Sum(root_);
-	}
+    void Visit(Node* node) {
+        using namespace std;
+        cout << node->item << " ";  // 수행하고 싶은 작업 구현(여기서는 출력)
+    }
 
-	int Sum(Node* node)
-	{
-		return 0; // TODO:
-	}
+    int Sum() { return Sum(root_); }
 
-	int Height()
-	{
-		return Height(root_);
-	}
+    int Sum(Node* node) {
+        if (node->left && node->right) {
+            return node->item + Sum(node->left) + Sum(node->right);
+        }
+        if (node->left) {
+            return node->item + Sum(node->left);
+        }
+        if (node->right) {
+            return node->item + Sum(node->right);
+        }
+        return node->item;  // TODO:
+    }
 
-	int Height(Node* node)
-	{
-		return 0; // TODO:
-	}
+    int Height() { return Height(root_); }
 
-	~BinaryTree()
-	{
-		DeleteTree(root_);
-	}
+    int Height(Node* node) {
+        if (node->left && node->right) {
+            return (1 + Height(node->left)) > (1 + Height(node->right))
+                       ? (1 + Height(node->left))
+                       : (1 + Height(node->right));
+        } else if (node->left) {
+            return 1 + Height(node->left);
+        } else if (node->right) {
+            return 1 + Height(node->right);
+        }
+        return 1;  // TODO:
+    }
 
-	void DeleteTree(Node* node)
-	{
-		if (node)
-		{
-			// TODO: 힌트 Post-order
-		}
-	}
+    ~BinaryTree() { DeleteTree(root_); }
 
-	void Preorder() { Preorder(root_); }
-	void Preorder(Node* node)
-	{
-		// TODO:
-	};
+    void DeleteTree(Node* node) {
+        if (node) {
+            // TODO: 힌트 Post-order
+        }
+    }
 
-	void Inorder() { Inorder(root_); }
-	void Inorder(Node* node)
-	{
-		// TODO:
-	}
+    void Preorder() { Preorder(root_); }
+    void Preorder(Node* node) {
+        Visit(node);
+        if (node->left) Preorder(node->left);
+        if (node->right) Preorder(node->right);
+    };
 
-	void Postorder() { Postorder(root_); }
-	void Postorder(Node* node)
-	{
-		// TODO:
-	}
+    void Inorder() { Inorder(root_); }
+    void Inorder(Node* node) {
+        if (node->left) Inorder(node->left);
+        Visit(node);
+        if (node->right) Inorder(node->right);
+    }
 
-	void LevelOrder()
-	{
-		Queue<Node*> q; // 힌트: MyQueue q;
-		Node* current = root_;
-		while (current)
-		{
-			Visit(current);
-			// TODO:
-		}
-	}
+    void Postorder() { Postorder(root_); }
+    void Postorder(Node* node) {
+        if (node->left) Postorder(node->left);
+        if (node->right) Postorder(node->right);
+        Visit(node);
+    }
 
-	void IterPreorder()
-	{
-		if (!root_) return;
+    void LevelOrder() {
+        Queue<Node*> q;  // 힌트: MyQueue q;
+        Node* current = root_;
+        while (current) {
+            Visit(current);
+            // TODO:
+            if (current->left) q.Enqueue(current->left);
+            if (current->right) q.Enqueue(current->right);
+            if (q.IsEmpty()) return;
+            current = q.Front();
+            q.Dequeue();
+        }
+    }
 
-		Stack<Node*> s; // 힌트: MyStack q;
-		s.Push(root_);
+    void IterPreorder() {
+        if (!root_) return;
 
-		while (!s.IsEmpty())
-		{
-			// TODO:
-		}
-	}
+        MyStack s;  // 힌트: MyStack q;
+        s.Stack::Push(root_);
 
-	void IterInorder()
-	{
-		if (!root_) return;
+        while (!s.IsEmpty()) {
+            Node* current = s.Top();
+            s.Pop();
+            Visit(current);
+            if (current->right) s.Push(current->right);
+            if (current->left) s.Push(current->left);
+            std::cout << "Stack :";
+            s.Print();
+        }
+    }
 
-		Stack<Node*> s;
+    void IterInorder() {
+        if (!root_) return;
 
-		Node* current = root_;
-		while (current || !s.IsEmpty())
-		{
-			// TODO:
-		}
-	}
+        MyStack s;
 
-	void IterPostorder()
-	{
-		if (!root_) return;
+        Node* current = root_;
+        while (current || !s.IsEmpty()) {
+            // TODO:
+            while (current) {
+                s.Push(current);
+                current = current->left;
+            }
+            // s.Print();
+            current = s.Top();
+            s.Pop();
+            Visit(current);
+            current = current->right;
+        }
+    }
 
-		Stack<Node*> s1, s2;
-		s1.Push(root_);
+    void IterPostorder() {
+        if (!root_) return;
 
-		while (!s1.IsEmpty())
-		{
-			// TODO:
-		}
+        MyStack s1, s2;
+        s1.Push(root_);
 
-		while (!s2.IsEmpty())
-		{
-			// TODO:
-		}
-	}
+        while (!s1.IsEmpty()) {
+            Node* node = s1.Top();
+            s1.Pop();
+            s2.Push(node);
+            if (node->left) s1.Push(node->left);
+            if (node->right) s1.Push(node->right);
+            std::cout << "S1 : ";
+            s1.Print();
+            std::cout << std::endl;
+            std::cout << "S2 : ";
+            s2.Print();
+            std::cout << std::endl;
+        }
 
-	void Print2D();
-	void PrintLevel(int n);
-	void DisplayLevel(Node* p, int lv, int d);
+        while (!s2.IsEmpty()) {
+            // TODO:
+            Node* node = s2.Top();
+            s2.Pop();
+            Visit(node);
+        }
+    }
 
-protected:
-	Node* root_ = nullptr;
+    void Print2D();
+    void PrintLevel(int n);
+    void DisplayLevel(Node* p, int lv, int d);
 };
 
 // 디버깅 편의 도구
 // https://stackoverflow.com/questions/36802354/print-binary-tree-in-a-pretty-way-using-c
-template<typename T>
-void BinaryTree<T>::Print2D()
-{
-	using namespace std;
-	int i = 0;
-	while (i < Height()) {
-		PrintLevel(i);
-		i++;
-		cout << endl;
-	}
+template <typename T>
+void BinaryTree<T>::Print2D() {
+    using namespace std;
+    int i = 0;
+    while (i < Height()) {
+        PrintLevel(i);
+        i++;
+        cout << endl;
+    }
 }
 
-template<typename T>
+template <typename T>
 void BinaryTree<T>::PrintLevel(int n) {
-	using namespace std;
-	Node* temp = root_;
-	int val = (int)pow(2.0, Height() - n + 1.0);
-	cout << setw(val) << "";
-	DisplayLevel(temp, n, val);
+    using namespace std;
+    Node* temp = root_;
+    int val = (int)pow(2.0, Height() - n + 1.0);
+    cout << setw(val) << "";
+    DisplayLevel(temp, n, val);
 }
 
-template<typename T>
+template <typename T>
 void BinaryTree<T>::DisplayLevel(Node* p, int lv, int d) {
-	using namespace std;
-	int disp = 2 * d;
-	if (lv == 0) {
-		if (p == NULL) {
-			cout << "   ";
-			cout << setw(disp - 3) << "";
-			return;
-		}
-		else {
-			int result = ((p->item <= 1) ? 1 : (int)log10(p->item) + 1);
-			cout << " " << p->item << " ";
-			cout << setw(static_cast<streamsize>(disp) - result - 2) << "";
-		}
-	}
-	else
-	{
-		if (p == NULL && lv >= 1) {
-			DisplayLevel(NULL, lv - 1, d);
-			DisplayLevel(NULL, lv - 1, d);
-		}
-		else {
-			DisplayLevel(p->left, lv - 1, d);
-			DisplayLevel(p->right, lv - 1, d);
-		}
-	}
+    using namespace std;
+    int disp = 2 * d;
+    if (lv == 0) {
+        if (p == NULL) {
+            cout << "   ";
+            cout << setw(disp - 3) << "";
+            return;
+        } else {
+            int result = ((p->item <= 1) ? 1 : (int)log10(p->item) + 1);
+            cout << " " << p->item << " ";
+            cout << setw(static_cast<streamsize>(disp) - result - 2) << "";
+        }
+    } else {
+        if (p == NULL && lv >= 1) {
+            DisplayLevel(NULL, lv - 1, d);
+            DisplayLevel(NULL, lv - 1, d);
+        } else {
+            DisplayLevel(p->left, lv - 1, d);
+            DisplayLevel(p->right, lv - 1, d);
+        }
+    }
 }
