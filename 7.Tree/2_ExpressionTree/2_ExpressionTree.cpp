@@ -47,15 +47,16 @@ class ExpressionTree : public BinaryTree<char> {
     }
     void Infix(Node* node) {
         // TODO: 수식을 Infix 형식으로 출력 (괄호 포함)
-        cout << "(";
+
         if (!IsDigit(node->item)) {
+            cout << "(";
             Infix(node->left);
             cout << node->item;
             Infix(node->right);
+            cout << ")";
         } else {
             cout << node->item;
         }
-        cout << ")";
     }
 
     void Postfix() {
@@ -64,6 +65,14 @@ class ExpressionTree : public BinaryTree<char> {
     }
     void Postfix(Node* node) {
         // TODO: 수식을 Postfix 형식으로 출력
+        if (!node) {
+            return;
+        }
+        if (!IsDigit(node->item)) {
+            Postfix(node->left);
+            Postfix(node->right);
+        }
+        cout << node->item;
     }
 
     // Infix -> postfix -> expression tree
@@ -87,12 +96,21 @@ class ExpressionTree : public BinaryTree<char> {
             postfix.Dequeue();
 
             if (c >= '0' && c <= '9') {
-                // TODO:
+                Node* newNode = new Node{c, nullptr, nullptr};
+                s.Push(newNode);
             } else {
-                // TODO:
+                Node* right = s.Top();
+                s.Pop();
+                Node* left = s.Top();
+                s.Pop();
+                Node* newNode = new Node{
+                    c,
+                    left,
+                    right,
+                };
+                s.Push(newNode);
             }
         }
-
         root_ = s.Top();
     }
 };
@@ -139,7 +157,6 @@ int main() {
     // 수식 트리에 저장되어 있는 수식을 Infix 방식으로 출력합니다.
     cout << "  Infix: ";
     tree.Infix();  // (5+((3-2)*4)) <- 출력 예시
-    return 0;
 
     // 수식 트리에 저장되어 있는 수식을 Postfix 방식으로 출력합니다.
     cout << "Postfix: ";
